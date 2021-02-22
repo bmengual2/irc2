@@ -33,9 +33,12 @@ class App extends Component {
     this.command = this.command.bind(this);
   }
 
+  socket = () => {
+    return socketIOClient(this.state.endpoint)
+  }
+
   validatePseudo =  () => {
-    var socket = socketIOClient(this.state.endpoint);
-    socket.emit("login_register", {
+    this.socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
   }
@@ -70,6 +73,7 @@ class App extends Component {
     this.setState({ currentChannel: undefined })
   }
   command = () => {
+    if (this.state.commandAct.split(" "))
     if (this.state.currentChannel === undefined) {
       if (this.state.channels.includes(this.state.commandAct) > 0) {
       this.setCurrentChannel(this.state.commandAct);
