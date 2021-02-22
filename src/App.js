@@ -26,7 +26,7 @@ document.addEventListener("keypress", function (event) {
 class App extends Component {
   constructor() {
     super();
-    this.state = { modalShow: true, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, endpoint: "http://localhost:82" };
+    this.state = { modalShow: true, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, socket: io('http://localhost:82/') };
     this.onChangePseudo = this.onChangePseudo.bind(this);
     this.setCurrentChannel = this.setCurrentChannel.bind(this);
     this.deleteChan = this.deleteChan.bind(this);
@@ -38,17 +38,13 @@ class App extends Component {
 
 
   validatePseudo =  () => {
-    const socket = io('http://localhost:82/');
-    function then1() {
-      this.requestChannels();
-    }
-    socket.emit("login_register", {
+    this.socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
-    socket.on("logged_in", function(pseudo){
+    this.socket.on("logged_in", function(pseudo){
         /* console.log(socket.rooms) */
         console.log(this);
-        then1();
+        this.setState({ modalShow: false });
     });
   }
   
