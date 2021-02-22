@@ -38,7 +38,7 @@ class App extends Component {
 
 
   validatePseudo =  () => {
-    this.socket.emit("login_register", {
+    this.state.socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
     this.state.socket.on("logged_in", function(pseudo){
@@ -51,9 +51,8 @@ class App extends Component {
 
   requestChannels = () => {
     this.setState({ modalShow: false});
-    var socket = socketIOClient(this.state.endpoint);
-    socket.emit("listChannels")
-    socket.on("listChannels", data => {
+    this.state.socket.emit("listChannels")
+    this.state.socket.on("listChannels", data => {
       this.setState({ channels : data.channels})
     });
   }
