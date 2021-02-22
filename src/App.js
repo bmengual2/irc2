@@ -6,6 +6,7 @@ import { ListeChannels } from "./composants/listeChannels";
 import { AlertChannel } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { socketIOClient } from "socket.io";
+import { io } from "socket.io-client";
 
 document.addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -35,10 +36,16 @@ class App extends Component {
 
 
   validatePseudo =  () => {
-    const socket = socketIOClient(this.state.endpoint);
+    var socket = io('http://localhost:82/');
     socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
+    socket.on("logged_in", function(pseudo){
+        console.log("activé !!! ")
+        console.log(pseudo)
+        /* console.log(socket.rooms) */
+        this.setState({ modalShow: false });
+    });
   }
   
 
@@ -95,7 +102,6 @@ class App extends Component {
 {(this.state.currentChannel === undefined) ? <ListeChannels channels={this.state.channels} setCurrentChannel={this.setCurrentChannel}/> : <ChannelShow channel={this.state.currentChannel} messageChannel={this.state.messageChannel} />}
       <ModalAuth
         show={this.state.modalShow}
-        onHide={() => this.setState({ modalShow: false })}
         validatePseudo={this.validatePseudo}
         onChangePseudo={this.onChangePseudo}
         pseudo={this.state.pseudo}

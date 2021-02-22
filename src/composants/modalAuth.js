@@ -39,7 +39,6 @@ export function ModalAuth(props) {
                   variant="dark"
                   disabled={(props.pseudo === undefined || props.pseudo === "")}
                   onClick={() => {
-                    props.onHide();
                     props.validatePseudo();
                   }}
                 >
