@@ -42,10 +42,10 @@ class App extends Component {
       pseudo: this.state.pseudo
       });
     socket.on("logged_in", function(pseudo){
-        console.log("activé !!! ")
-        console.log(pseudo)
         /* console.log(socket.rooms) */
-        console.log("reponse reçue")
+        console.log(pseudo);
+        this.setState({ modalShow: false});
+        this.requestChannels();
     });
   }
   
