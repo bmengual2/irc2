@@ -53,7 +53,7 @@ class App extends Component {
     if (data.validate === true) {
       this.setState({ modalShow: false});
       this.state.socket.emit("listChannels");
-      this.state.socket.on("listChannels", list => console.log(list))
+      this.state.socket.on("listChannels", list => this.setChannels(list))
     } else {
       this.setShowAlertPseudo(true);
     }
