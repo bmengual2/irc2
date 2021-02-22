@@ -33,12 +33,10 @@ class App extends Component {
     this.command = this.command.bind(this);
   }
 
-  socket = () => {
-    return socketIOClient(this.state.endpoint)
-  }
 
   validatePseudo =  () => {
-    this.socket.emit("login_register", {
+    const socket = socketIOClient(this.state.endpoint);
+    socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
   }
