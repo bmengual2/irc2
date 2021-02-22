@@ -41,11 +41,7 @@ class App extends Component {
     this.state.socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
-    this.state.socket.on("logged_in", function(pseudo){
-        /* console.log(socket.rooms) */
-        console.log(this);
-        this.setState({ modalShow: false });
-    });
+    this.state.socket.on("logged_in", this.requestChannels());
   }
   
 
