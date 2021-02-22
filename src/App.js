@@ -25,7 +25,7 @@ document.addEventListener("keypress", function (event) {
 class App extends Component {
   constructor() {
     super();
-    this.state = { modalShow: true, showAlertPseudo: false, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, socket: io('http://localhost:82/') };
+    this.state = { modalShow: true, showAlertPseudo: false, channels: [], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, socket: io('http://localhost:82/') };
     this.onChangePseudo = this.onChangePseudo.bind(this);
     this.setCurrentChannel = this.setCurrentChannel.bind(this);
     this.deleteChan = this.deleteChan.bind(this);
@@ -49,17 +49,19 @@ class App extends Component {
   
 
   requestChannels = (data) => {
+    console.log(data);
     if (data.validate === true) {
       this.setState({ modalShow: false});
-      this.state.socket.emit("listChannels")
-      this.state.socket.on("listChannels", data => this.setChannels(data))
+      this.state.socket.emit("listChannels");
+      this.state.socket.on("listChannels", list => console.log(list))
     } else {
       this.setShowAlertPseudo(true);
     }
   }
 
   setChannels = (data) => {
-    this.setState({ channels: data.liste })
+    console.log("liste", data.liste);
+    this.setState({ channels: data.liste });
   }
 
   onChangePseudo = (e) => {
