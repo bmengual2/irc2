@@ -39,14 +39,16 @@ class App extends Component {
 
   validatePseudo =  () => {
     const socket = io('http://localhost:82/');
-    this.requestChannels = this.requestChannels.bind(this);
+    function then1() {
+      this.requestChannels();
+    }
     socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
     socket.on("logged_in", function(pseudo){
         /* console.log(socket.rooms) */
         console.log(this);
-        this.requestChannels();
+        then1();
     });
   }
   
