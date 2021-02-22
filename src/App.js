@@ -33,6 +33,7 @@ class App extends Component {
     this.onChangeCommand = this.onChangeCommand.bind(this);
     this.command = this.command.bind(this);
     this.validatePseudo = this.validatePseudo.bind(this);
+    this.requestChannels = this.requestChannels.bind(this);
   }
 
 
@@ -44,13 +45,13 @@ class App extends Component {
     socket.on("logged_in", function(pseudo){
         /* console.log(socket.rooms) */
         console.log(pseudo);
-        this.setState({ modalShow: false});
         this.requestChannels();
     });
   }
   
 
   requestChannels = () => {
+    this.setState({ modalShow: false});
     var socket = socketIOClient(this.state.endpoint);
     socket.emit("listChannels")
     socket.on("listChannels", data => {
