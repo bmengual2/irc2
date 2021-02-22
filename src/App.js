@@ -44,7 +44,7 @@ class App extends Component {
         console.log("activé !!! ")
         console.log(pseudo)
         /* console.log(socket.rooms) */
-        this.setState({ modalShow: false });
+        console.log("reponse reçue")
     });
   }
   
