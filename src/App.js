@@ -5,6 +5,7 @@ import { ModalAuth } from "./composants/modalAuth";
 import { ListeChannels } from "./composants/listeChannels";
 import { AlertChannel } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
+import { socketIOClient } from "socket.io";
 
 document.addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -24,12 +25,28 @@ document.addEventListener("keypress", function (event) {
 class App extends Component {
   constructor() {
     super();
-    this.state = { modalShow: true, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined };
+    this.state = { modalShow: true, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, endpoint: "http://localhost:82" };
     this.onChangePseudo = this.onChangePseudo.bind(this);
     this.setCurrentChannel = this.setCurrentChannel.bind(this);
     this.deleteChan = this.deleteChan.bind(this);
     this.onChangeCommand = this.onChangeCommand.bind(this);
     this.command = this.command.bind(this);
+  }
+
+  validatePseudo =  () => {
+    var socket = socketIOClient(this.state.endpoint);
+    socket.emit("login_register", {
+      pseudo: this.state.pseudo
+      });
+  }
+  
+
+  requestChannels = () => {
+    var socket = socketIOClient(this.state.endpoint);
+    socket.emit("listChannels")
+    socket.on("listChannels", data => {
+      this.setState({ channels : data.channels})
+    });
   }
 
   onChangePseudo = (e) => {
@@ -77,6 +94,7 @@ class App extends Component {
       <ModalAuth
         show={this.state.modalShow}
         onHide={() => this.setState({ modalShow: false })}
+        validatePseudo={this.validatePseudo}
         onChangePseudo={this.onChangePseudo}
         pseudo={this.state.pseudo}
       />

@@ -34,7 +34,17 @@ export function ModalAuth(props) {
   </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={props.onHide} variant="dark" id="buttonGo" disabled={(props.pseudo === undefined || props.pseudo === "")}>Go</Button>
+        <Button
+                  id="buttonGo"
+                  variant="dark"
+                  disabled={(props.pseudo === undefined || props.pseudo === "")}
+                  onClick={() => {
+                    props.onHide();
+                    props.validatePseudo();
+                  }}
+                >
+                  Valider
+                </Button>
         </Modal.Footer>
       </Modal>
     );
