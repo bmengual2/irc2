@@ -34,6 +34,7 @@ class App extends Component {
     this.command = this.command.bind(this);
     this.validatePseudo = this.validatePseudo.bind(this);
     this.requestChannels = this.requestChannels.bind(this);
+    this.setChannels = this.setChannels.bind(this);
   }
 
 
@@ -48,9 +49,11 @@ class App extends Component {
   requestChannels = () => {
     this.setState({ modalShow: false});
     this.state.socket.emit("listChannels")
-    this.state.socket.on("listChannels", data => {
-      this.setState({ channels : data.channels})
-    });
+    this.state.socket.on("listChannels", data => this.setChannels(data))
+  }
+
+  setChannels = (data) => {
+    this.setState({ channels: data.liste })
   }
 
   onChangePseudo = (e) => {
