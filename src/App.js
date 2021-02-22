@@ -32,6 +32,7 @@ class App extends Component {
     this.deleteChan = this.deleteChan.bind(this);
     this.onChangeCommand = this.onChangeCommand.bind(this);
     this.command = this.command.bind(this);
+    this.validatePseudo = this.validatePseudo.bind(this);
   }
 
 
