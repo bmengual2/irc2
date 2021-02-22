@@ -20,9 +20,8 @@ export function ModalAuth(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>
-            Choissisez un pseudo avant de pouvoir continuer sur le site !
-          </p>
+          {console.log(props.showAlertPseudo)}
+          {props.showAlertPseudo ? <p>Vous ne pouvez pas utiliser ce pseudo !</p> : <p>Choissisez votre pseudo</p>}
           <Form>
   <Form.Group controlId="formBasicEmail">
     <Form.Label>Pseudo</Form.Label>

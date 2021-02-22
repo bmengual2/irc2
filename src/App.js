@@ -5,7 +5,6 @@ import { ModalAuth } from "./composants/modalAuth";
 import { ListeChannels } from "./composants/listeChannels";
 import { AlertChannel } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
-import { socketIOClient } from "socket.io";
 import { io } from "socket.io-client";
 
 document.addEventListener("keypress", function (event) {
@@ -26,7 +25,7 @@ document.addEventListener("keypress", function (event) {
 class App extends Component {
   constructor() {
     super();
-    this.state = { modalShow: true, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, socket: io('http://localhost:82/') };
+    this.state = { modalShow: true, showAlertPseudo: false, channels: ["test1", "test2", "test3"], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, socket: io('http://localhost:82/') };
     this.onChangePseudo = this.onChangePseudo.bind(this);
     this.setCurrentChannel = this.setCurrentChannel.bind(this);
     this.deleteChan = this.deleteChan.bind(this);
@@ -35,6 +34,9 @@ class App extends Component {
     this.validatePseudo = this.validatePseudo.bind(this);
     this.requestChannels = this.requestChannels.bind(this);
     this.setChannels = this.setChannels.bind(this);
+    this.setShowAlert = this.setShowAlert.bind(this);
+    this.setShowAlertPseudo = this.setShowAlertPseudo.bind(this);
+
   }
 
 
@@ -42,14 +44,18 @@ class App extends Component {
     this.state.socket.emit("login_register", {
       pseudo: this.state.pseudo
       });
-    this.state.socket.on("logged_in", this.requestChannels());
+    this.state.socket.on("logged_in", data => this.requestChannels(data));
   }
   
 
-  requestChannels = () => {
-    this.setState({ modalShow: false});
-    this.state.socket.emit("listChannels")
-    this.state.socket.on("listChannels", data => this.setChannels(data))
+  requestChannels = (data) => {
+    if (data.validate === true) {
+      this.setState({ modalShow: false});
+      this.state.socket.emit("listChannels")
+      this.state.socket.on("listChannels", data => this.setChannels(data))
+    } else {
+      this.setShowAlertPseudo(true);
+    }
   }
 
   setChannels = (data) => {
@@ -63,6 +69,10 @@ class App extends Component {
   }
   setShowAlert = (bool) => {
     this.setState({ showAlert: bool })
+  }
+
+  setShowAlertPseudo = (bool) => {
+    this.setState({ showAlertPseudo: bool })
   }
   onChangeCommand = (e) => {
     if (e !== this.state.commandAct) {
@@ -98,12 +108,14 @@ class App extends Component {
       <>
 <Terminal pseudo={this.state.pseudo} deleteChan={this.deleteChan} onChangeCommand={this.onChangeCommand} command={this.command}/>
 <AlertChannel showAlert={this.state.showAlert} setShowAlert={this.setShowAlert} />
-{(this.state.currentChannel === undefined) ? <ListeChannels channels={this.state.channels} setCurrentChannel={this.setCurrentChannel}/> : <ChannelShow channel={this.state.currentChannel} messageChannel={this.state.messageChannel} />}
+{(this.state.currentChannel === undefined) ? <ListeChannels channels={this.state.channels} setCurrentChannel={this.setCurrentChannel}/> : <ChannelShow channel={this.state.currentChannel} messageChannel={this.state.messageChannel} />}3
       <ModalAuth
         show={this.state.modalShow}
         validatePseudo={this.validatePseudo}
         onChangePseudo={this.onChangePseudo}
         pseudo={this.state.pseudo}
+        showAlertPseudo={this.state.showAlertPseudo}
+        setShowAlertPseudo={this.setShowAlertPseudo}
       />
       </>
     );
