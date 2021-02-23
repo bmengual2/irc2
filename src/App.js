@@ -99,9 +99,15 @@ class App extends Component {
     }
   }
   afficherAlertePseudo(elem) {
+    console.log(elem.pseudo);
     if (elem.pseudo !== this.state.pseudo) {
       this.setState({ variantAlert: "success"});
       let txt = "Nouvel utilisateur :" + elem.pseudo;
+      this.setState({ textAlert: txt });
+      this.setState({ showAlert: true });
+    } else {
+      this.setState({ variantAlert: "danger"});
+      let txt = "pas de nouvel utilisateur" + elem.pseudo;
       this.setState({ textAlert: txt });
       this.setState({ showAlert: true });
     }
