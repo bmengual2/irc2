@@ -170,11 +170,11 @@ class App extends Component {
       this.state.socket.on("create", data => this.newChannel(data));
       this.setState({ command: ""});
     }
-    if (this.state.commandAct.split(" ")[0] === "delete") {
+    else if (this.state.commandAct.split(" ")[0] === "delete") {
       this.state.socket.emit("delete", {
         channel: this.state.commandAct.split(" ")[1]
         });
-      this.state.socket.on("delete", data => this.delChannel(data));
+      this.state.socket.on("create", data => this.delChannel(data));
       this.setState({ command: ""});
     }
     if (this.state.currentChannel === undefined) {
