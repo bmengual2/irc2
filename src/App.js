@@ -3,7 +3,7 @@ import Terminal from "./composants/terminal"
 import  'bootstrap/dist/css/bootstrap.min.css' ;
 import { ModalAuth } from "./composants/modalAuth";
 import { ListeChannels } from "./composants/listeChannels";
-import { Alert } from "./composants/alert";
+import { Alert2 } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { io } from "socket.io-client";
 
@@ -170,7 +170,7 @@ class App extends Component {
         onChangeCommand={this.onChangeCommand} 
         command={this.command}
       />
-      <Alert
+      <Alert2
         showAlert={this.state.showAlert} 
         setShowAlert={this.setShowAlert}
         variant={this.state.variantAlert}
