@@ -60,7 +60,7 @@ class App extends Component {
   }
 
   disconnect = () => {
-    this.state.socket.emit("disconnect", { pseudo: this.state.pseudo});
+    this.state.socket.emit("logged_out", { pseudo: this.state.pseudo});
   }
 
   setupBeforeUnloadListener = () => {
