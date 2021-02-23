@@ -92,6 +92,7 @@ class App extends Component {
   }
   setCurrentChannel(elem) {
     this.setState({ currentChannel: elem});
+    this.setState({ messageChannel: [{pseudo: "", message: ""}]});
     this.state.socket.emit("join", {channel: elem});
     this.state.socket.emit("listMessages", {channel: elem});
     this.state.socket.on("listMessages", data => this.setMessages(data));
