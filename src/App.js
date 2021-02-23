@@ -6,7 +6,6 @@ import { ListeChannels } from "./composants/listeChannels";
 import { Alert2 } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { io } from "socket.io-client";
-import { Button } from "react-bootstrap";
 
 document.addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -99,6 +98,14 @@ class App extends Component {
     this.setState({ commandAct: e});
     }
   }
+  afficherAlertePseudo(elem) {
+    if (elem.pseudo !== this.state.pseudo) {
+      this.setState({ variantAlert: "success"});
+      let txt = "Nouvel utilisateur :" + elem.pseudo;
+      this.setState({ textAlert: txt });
+      this.setState({ showAlert: true });
+    }
+  }
   setCurrentChannel(elem) {
     this.setState({ currentChannel: elem});
     this.setState({ messageChannel: [{pseudo: "Gandalf", message: "Pas encore de messages dans ce channel !"}]});
@@ -111,6 +118,7 @@ class App extends Component {
     try {
       this.state.socket.emit("listMessages", {channel: this.state.currentChannel});
       this.state.socket.on("listMessages", data => this.setMessages(data));
+      this.state.socketa.on("join", data => this.afficherAlertePseudo(data));
     } catch(err) {
       //no need to do anything
     }
@@ -205,7 +213,8 @@ class App extends Component {
         /> : 
         <ChannelShow 
           channel={this.state.currentChannel} 
-          messageChannel={this.state.messageChannel} 
+          messageChannel={this.state.messageChannel}
+          pseudo={this.state.pseudo} 
         />
       }
       <ModalAuth
@@ -215,11 +224,6 @@ class App extends Component {
         pseudo={this.state.pseudo}
         showAlertPseudo={this.state.showAlertPseudo}
         setShowAlertPseudo={this.setShowAlertPseudo}
-      />
-      <Button 
-        style={{ height:"0px", width:"0px" }} 
-        onClick={() => this.refreshChannel()} 
-        id="refresh"
       />
       </>
     );
