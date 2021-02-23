@@ -6,7 +6,7 @@ import { ListeChannels } from "./composants/listeChannels";
 import { Alert2 } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { io } from "socket.io-client";
-import { Button } from "bootstrap";
+import { Button } from "react-bootstrap";
 
 document.addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -174,6 +174,9 @@ class App extends Component {
         this.setState({ command: ""});
       }
     } else {
+      if (this.state.commandAct === "users") {
+        this.state.socket.emit("listUsers", {channel: this.state.currentChannel});
+      }
       this.state.socket.emit("messageChan", { message: this.state.commandAct, channel: this.state.currentChannel });
       this.state.socket.emit("listMessages", {channel: this.state.currentChannel });
       this.state.socket.on("listMessages", data => this.setMessages(data));
