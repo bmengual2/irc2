@@ -21,7 +21,7 @@ document.addEventListener("keypress", function (event) {
       }
     }
   }
-  if (event.key === "r") {
+  if (event.key === "Tab") {
     event.preventDefault();
     try {
       document.getElementById("refresh").click();
