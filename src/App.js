@@ -164,6 +164,7 @@ class App extends Component {
 
   delChannel = (data) => {
     if (data.validate === true) {
+      this.requestChannels(data);
       this.state.socket.on("listChannels", list => this.setChannels(list));
       this.setState({ variantAlert: "success"});
       this.setState({ textAlert: "Le channel a bien été supprimé : bien joué bg "});
