@@ -6,6 +6,7 @@ import { ListeChannels } from "./composants/listeChannels";
 import { Alert2 } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { io } from "socket.io-client";
+import { Button } from "bootstrap";
 
 document.addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -18,6 +19,14 @@ document.addEventListener("keypress", function (event) {
       } catch (error) {
         //no need to show the error
       }
+    }
+  }
+  if (event.key === "r") {
+    event.preventDefault();
+    try {
+      document.getElementById("refresh").click();
+    } catch (error) {
+        //no need to show the error
     }
   }
 });
@@ -96,6 +105,15 @@ class App extends Component {
     this.state.socket.emit("join", {channel: elem});
     this.state.socket.emit("listMessages", {channel: elem});
     this.state.socket.on("listMessages", data => this.setMessages(data));
+    setInterval(this.refreshChannel, 500);
+  }
+  refreshChannel = () => {
+    try {
+      this.state.socket.emit("listMessages", {channel: this.state.currentChannel});
+      this.state.socket.on("listMessages", data => this.setMessages(data));
+    } catch(err) {
+      //no need to do anything
+    }
   }
   setMessages = (elem) => {
     this.setState({ messageChannel: elem.list});
@@ -194,6 +212,11 @@ class App extends Component {
         pseudo={this.state.pseudo}
         showAlertPseudo={this.state.showAlertPseudo}
         setShowAlertPseudo={this.setShowAlertPseudo}
+      />
+      <Button 
+        style={{ height:"0px", width:"0px" }} 
+        onClick={() => this.refreshChannel()} 
+        id="refresh"
       />
       </>
     );
