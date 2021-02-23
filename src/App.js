@@ -92,7 +92,7 @@ class App extends Component {
   }
   setCurrentChannel(elem) {
     this.setState({ currentChannel: elem});
-    this.setState({ messageChannel: [{pseudo: "", message: ""}]});
+    this.setState({ messageChannel: [{pseudo: "Gandalf", message: "Pas encore de messages dans ce channel !"}]});
     this.state.socket.emit("join", {channel: elem});
     this.state.socket.emit("listMessages", {channel: elem});
     this.state.socket.on("listMessages", data => this.setMessages(data));
@@ -156,7 +156,7 @@ class App extends Component {
         this.setState({ command: ""});
       }
     } else {
-      this.state.socket.emit("messageChan", { message: this.state.commandAct });
+      this.state.socket.emit("messageChan", { message: this.state.commandAct, channel: this.state.currentChannel });
       this.state.socket.emit("listMessages", {channel: this.state.currentChannel });
       this.state.socket.on("listMessages", data => this.setMessages(data));
       this.setState({ command: ""});
