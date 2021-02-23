@@ -118,7 +118,7 @@ class App extends Component {
     this.state.socket.emit("join", {channel: elem});
     this.state.socket.emit("listMessages", {channel: elem});
     this.state.socket.on("listMessages", data => this.setMessages(data));
-    setInterval(this.refreshChannel, 500);
+    setInterval(this.refreshChannel, 1000);
   }
   refreshChannel = () => {
     try {
