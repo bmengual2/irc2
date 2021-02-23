@@ -7,6 +7,7 @@ import { Alert2 } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { io } from "socket.io-client";
 
+
 document.addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -58,6 +59,17 @@ class App extends Component {
     this.newChannel = this.newChannel.bind(this);
   }
 
+  disconnect = () => {
+    this.state.socket.emit("disconnect", { pseudo: this.state.pseudo});
+  }
+
+  setupBeforeUnloadListener = () => {
+    window.addEventListener("beforeunload", (ev) => {
+        ev.preventDefault();
+        return this.disconnect();
+    });
+  };
+
 
   validatePseudo =  () => {
     this.state.socket.emit("login_register", {
@@ -65,13 +77,13 @@ class App extends Component {
       });
     this.state.socket.on("logged_in", data => this.requestChannels(data));
   }
-  
 
   requestChannels = (data) => {
     if (data.validate === true) {
       this.setState({ modalShow: false});
       this.state.socket.emit("listChannels");
       this.state.socket.on("listChannels", list => this.setChannels(list))
+      this.setupBeforeUnloadListener();
     } else {
       this.setShowAlertPseudo(true);
     }
@@ -171,7 +183,6 @@ class App extends Component {
       this.setState({ command: ""});
     }
     else if (this.state.commandAct.split(" ")[0] === "delete") {
-      console.log("delete");
       this.state.socket.emit("delete", {
         channel: this.state.commandAct.split(" ")[1]
         });
