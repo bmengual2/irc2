@@ -106,7 +106,7 @@ class App extends Component {
 
   newChannel = (data) => {
     if (data.validate === true) {
-      this.state.socket.on("listChannels", this.requestChannels(true));
+      this.state.socket.on("listChannels", this.requestChannels(data));
       this.setState({ variantAlert: "success"});
       this.setState({ textAlert: "Nouveau channel créé ! bien joué bg"});
       this.setState({ showAlert: true });
