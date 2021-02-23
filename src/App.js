@@ -3,7 +3,7 @@ import Terminal from "./composants/terminal"
 import  'bootstrap/dist/css/bootstrap.min.css' ;
 import { ModalAuth } from "./composants/modalAuth";
 import { ListeChannels } from "./composants/listeChannels";
-import { AlertChannel } from "./composants/alert";
+import { Alert } from "./composants/alert";
 import ChannelShow from  "./composants/Channel";
 import { io } from "socket.io-client";
 
@@ -25,7 +25,18 @@ document.addEventListener("keypress", function (event) {
 class App extends Component {
   constructor() {
     super();
-    this.state = { modalShow: true, showAlertPseudo: false, channels: [], currentChannel: undefined, commandAct:"", showAlert: false, pseudo: undefined, socket: io('http://localhost:82/') };
+    this.state = { 
+      modalShow: true, 
+      showAlertPseudo: false, 
+      channels: [], 
+      currentChannel: undefined, 
+      commandAct:"", 
+      showAlert: false,
+      textAlert: "",
+      variantAlert: "success", 
+      pseudo: undefined, 
+      socket: io('http://localhost:82/'), 
+    };
     this.onChangePseudo = this.onChangePseudo.bind(this);
     this.setCurrentChannel = this.setCurrentChannel.bind(this);
     this.deleteChan = this.deleteChan.bind(this);
@@ -36,7 +47,7 @@ class App extends Component {
     this.setChannels = this.setChannels.bind(this);
     this.setShowAlert = this.setShowAlert.bind(this);
     this.setShowAlertPseudo = this.setShowAlertPseudo.bind(this);
-
+    this.newChannel = this.newChannel.bind(this);
   }
 
 
@@ -49,7 +60,6 @@ class App extends Component {
   
 
   requestChannels = (data) => {
-    console.log(data);
     if (data.validate === true) {
       this.setState({ modalShow: false});
       this.state.socket.emit("listChannels");
@@ -60,7 +70,6 @@ class App extends Component {
   }
 
   setChannels = (data) => {
-    console.log("liste", data.liste);
     this.setState({ channels: data.liste });
   }
 
@@ -82,35 +91,101 @@ class App extends Component {
     }
   }
   setCurrentChannel(elem) {
-    this.setState({ currentChannel: elem})
-    this.setState({ messageChannel: [{ pseudo: "pseudo1", message: "message1"}, { pseudo: "pseudo22222", message: "message2"}]})
+    this.setState({ currentChannel: elem});
+    this.state.socket.emit("join", {channel: elem});
+    this.state.socket.emit("listMessages", {channel: elem});
+    this.state.socket.on("listMessages", data => this.setMessages(data));
+  }
+  setMessages = (elem) => {
+    this.setState({ messageChannel: elem.list});
   }
   deleteChan = () => {
+    this.state.socket.emit("leave", { channel: this.state.currentChannel });
     this.setState({ currentChannel: undefined })
   }
+
+  newChannel = (data) => {
+    if (data.validate === true) {
+      this.state.socket.on("listChannels", list => this.setChannels(list));
+      this.setState({ variantAlert: "success"});
+      this.setState({ textAlert: "Nouveau channel créé ! bien joué bg"});
+      this.setState({ showAlert: true });
+    } else {
+      this.setState({ variantAlert: "danger"});
+      this.setState({ textAlert: "Impossible de créer ce channel !  réessaye bg"});
+      this.setState({ showAlert: true });
+    }
+  }
+
+  delChannel = (data) => {
+    if (data.validate === true) {
+      this.state.socket.on("listChannels", list => this.setChannels(list));
+      this.setState({ variantAlert: "success"});
+      this.setState({ textAlert: "Le channel a bien été supprimé : bien joué bg "});
+      this.setState({ showAlert: true });
+    } else {
+      this.setState({ variantAlert: "danger"});
+      this.setState({ textAlert: "Impossible de supprimer ce channel !  réessaye bg"});
+      this.setState({ showAlert: true });
+    }
+  }
   command = () => {
-    if (this.state.commandAct.split(" "))
+    if (this.state.commandAct.split(" ")[0] === "create") {
+      this.state.socket.emit("create", {
+        channel: this.state.commandAct.split(" ")[1]
+        });
+      this.state.socket.on("create", data => this.newChannel(data));
+      this.setState({ command: ""});
+    }
+    if (this.state.commandAct.split(" ")[0] === "delete") {
+      this.state.socket.emit("delete", {
+        channel: this.state.commandAct.split(" ")[1]
+        });
+      this.state.socket.on("delete", data => this.delChannel(data));
+      this.setState({ command: ""});
+    }
     if (this.state.currentChannel === undefined) {
       if (this.state.channels.includes(this.state.commandAct) > 0) {
       this.setCurrentChannel(this.state.commandAct);
       this.setState({ command: ""});
       } else {
+        this.setState({ variantAlert: "danger"});
+        this.setState({ textAlert: "Ce channel n'existe pas ! dsl bg"});
         this.setShowAlert(true);
+        this.setState({ command: ""});
       }
     } else {
-      var interm = this.state.messageChannel;
-      if (interm[interm.length - 1].message !== this.state.commandAct) {
-      interm.push({ pseudo: this.state.pseudo, message: this.state.commandAct});
-      }
-      this.setState({ messageChannel: interm });
+      this.state.socket.emit("messageChan", { message: this.state.commandAct });
+      this.state.socket.emit("listMessages", {channel: this.state.currentChannel });
+      this.state.socket.on("listMessages", data => this.setMessages(data));
+      this.setState({ command: ""});
     }
   }
   render() {
     return (
       <>
-<Terminal pseudo={this.state.pseudo} deleteChan={this.deleteChan} onChangeCommand={this.onChangeCommand} command={this.command}/>
-<AlertChannel showAlert={this.state.showAlert} setShowAlert={this.setShowAlert} />
-{(this.state.currentChannel === undefined) ? <ListeChannels channels={this.state.channels} setCurrentChannel={this.setCurrentChannel}/> : <ChannelShow channel={this.state.currentChannel} messageChannel={this.state.messageChannel} />}3
+      <Terminal 
+        pseudo={this.state.pseudo} 
+        deleteChan={this.deleteChan} 
+        onChangeCommand={this.onChangeCommand} 
+        command={this.command}
+      />
+      <Alert
+        showAlert={this.state.showAlert} 
+        setShowAlert={this.setShowAlert}
+        variant={this.state.variantAlert}
+        text={this.state.textAlert} 
+      />
+      {(this.state.currentChannel === undefined) ? 
+        <ListeChannels 
+          channels={this.state.channels}
+          setCurrentChannel={this.setCurrentChannel}
+        /> : 
+        <ChannelShow 
+          channel={this.state.currentChannel} 
+          messageChannel={this.state.messageChannel} 
+        />
+      }
       <ModalAuth
         show={this.state.modalShow}
         validatePseudo={this.validatePseudo}

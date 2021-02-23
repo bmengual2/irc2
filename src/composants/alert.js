@@ -4,10 +4,9 @@ import { Alert } from "react-bootstrap";
 export function AlertChannel(props) {
       if (props.showAlert) {
       return (
-        <Alert variant="danger" onClose={() => props.setShowAlert(false)} dismissible>
-          <Alert.Heading>Erreur !!</Alert.Heading>
+        <Alert variant={props.variant} onClose={() => props.setShowAlert(false)} dismissible>
           <p>
-            Ce channel n'existe pas !
+            {props.text}
           </p>
         </Alert>
       );
